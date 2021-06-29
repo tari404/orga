@@ -22,7 +22,7 @@
     <div>
       <p>今日可获得</p>
       <input type="range" min="-100" max="400" step="1" v-model="rewards" />
-      <span>{{ rewards }}</span>
+      <input type="number" v-model="rewards" />
     </div>
     <div @click="submitDiary">更新</div>
     <div>
