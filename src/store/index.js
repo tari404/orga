@@ -1,11 +1,18 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import Vue from 'vue'
+import Vuex from 'vuex'
+import Database from '../assets/lib/Database'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {},
+  state: {
+    db: new Database(),
+  },
   mutations: {},
-  actions: {},
+  actions: {
+    OPEN_DB({ state }) {
+      return state.db.openDB()
+    },
+  },
   modules: {},
-});
+})
