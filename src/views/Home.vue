@@ -1,33 +1,45 @@
 <template>
   <div class="home">
-    <Now />
-    <div>
-      本月剩余零用钱：<span>{{ monthly.grow }}</span>
-    </div>
-    <div>
-      今日增加：<span>{{ diary.rewards }}</span>
+    <div class="orga-top">
+      <Now />
+      <div>
+        本月已攒：<span>{{ monthly.grow }}</span>
+      </div>
+      <div>
+        今日增加：<span>{{ diary.rewards }}</span>
+      </div>
     </div>
     <div class="orga-aim">
-      <p>今日目标</p>
-      <div v-if="!diary.targets.length" @click="addDiary">添加目标</div>
-      <ul v-else>
-        <li v-for="(target, i) in diary.targets" :key="i">
-          <span>{{ target.content }}</span>
-          <input type="checkbox" v-model="target.finished" />
-        </li>
-      </ul>
-      <div>{{ diary.remarks }}</div>
+      <div class="title">
+        <p>今日目标</p>
+        <span v-if="diary.targets.length" @click="addDiary">编辑</span>
+      </div>
+      <div class="diary-container">
+        <div class="add-diary" v-if="!diary.targets.length" @click="addDiary">添加目标</div>
+        <ul v-else>
+          <li v-for="(target, i) in diary.targets" :key="i">
+            <span>{{ target.content }}</span>
+            <input type="checkbox" v-model="target.finished" />
+          </li>
+        </ul>
+        <div class="remarks">{{ diary.remarks }}</div>
+      </div>
     </div>
-    <hr />
-    <div>
-      <p>今日可获得</p>
-      <input type="range" min="-100" max="400" step="1" v-model="rewards" />
-      <input type="number" v-model="rewards" />
-    </div>
-    <div @click="submitDiary">更新</div>
-    <div>
-      <div v-if="tomorrow.targets.length">明日目标已安排</div>
-      <div v-else @click="addTomorrow">设定明日目标</div>
+    <div class="orga-footer">
+      <div class="rewards">
+        <div>
+          <p>今日报酬</p>
+          <div class="inputs">
+            <input class="range" type="range" min="-100" max="400" step="1" v-model="rewards" />
+            <input class="number" type="number" v-model="rewards" />
+          </div>
+        </div>
+        <div class="submit-diary" @click="submitDiary">更新</div>
+      </div>
+      <div>
+        <div v-if="tomorrow.targets.length">明日目标已安排</div>
+        <div v-else @click="addTomorrow">设定明日目标</div>
+      </div>
     </div>
     <UpdateDiary v-if="toUpdate" :date="toUpdate.date" :diary="toUpdate" @close="updateFinished" />
   </div>
@@ -147,14 +159,90 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.home
+  height 100%
+  display flex
+  flex-direction column
+.orga-top
+  padding 12px
+  color #fff
+  background-color #558b2f
 .orga-aim
+  flex 1 1 auto
+  display flex
+  flex-direction column
+  padding 12px
+  .title
+    margin-bottom 18px
+    display flex
+    justify-content space-between
+    align-items center
+    p
+      font-weight 500
+    span
+      color #c5e1a5
+  .add-diary
+    height 60px
+    background-color #f1f8e9
+    border-radius 6px
+    border solid 2px #c5e1a5
+    color #c5e1a5
+    font-size 24px
+    display flex
+    justify-content center
+    align-items center
+  .diary-container
+    flex 1 1 100px
+    white-space pre-wrap
+    overflow-y scroll
   ul
     padding 0
   li
-    padding 4px 0
+    padding 6px 0
     border-top solid 1px #eee
     display flex
     justify-content space-between
+    align-items center
     &:last-child
       border-bottom solid 1px #eee
+    input
+      margin-left 6px
+      flex 0 0 16px
+  .remarks
+    margin-top 12px
+.orga-footer
+  padding 12px
+  color #fff
+  background-color #558b2f
+  .rewards
+    padding-right 50px
+    display flex
+    justify-content space-between
+    align-items center
+    position relative
+    .inputs
+      display flex
+      align-items center
+    .range
+      height 30px
+      margin-right 24px
+    .number
+      padding 0
+      width 100px
+      color #fff
+      font inherit
+      font-size 24px
+      line-height 30px
+      border none
+      outline none
+      display inline
+      border-radius 0
+      background none
+  .submit-diary
+    position absolute
+    right 0
+    top 0
+    height 100%
+    display flex
+    align-items center
 </style>
