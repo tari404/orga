@@ -15,18 +15,18 @@ export default {
 
   monthOf(ts) {
     const now = this.now(ts)
-    return now.getYear() * 12 + now.getMonth()
+    return (now.getUTCFullYear() - 1900) * 12 + now.getUTCMonth()
   },
 
   firstDayOfMonth(ts) {
     const now = this.now(ts)
-    return this.dateOf(new Date(now.getFullYear(), now.getMonth(), 1).getTime())
+    return this.dateOf(new Date(now.getUTCFullYear(), now.getUTCMonth(), 1).getTime())
   },
 
   daysOfMonth(ts) {
     const now = this.now(ts)
-    const year = now.getFullYear()
-    const month = now.getMonth()
+    const year = now.getUTCFullYear()
+    const month = now.getUTCMonth()
     const first = new Date(year, month, 1).getTime()
     const last = new Date(year, month + 1, 1).getTime()
     return (last - first) / 86400000
