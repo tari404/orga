@@ -17,10 +17,13 @@
       <div class="diary-container">
         <div class="add-diary" v-if="!diary.targets.length" @click="addDiary">添加目标</div>
         <ul v-else>
-          <li v-for="(target, i) in diary.targets" :key="i">
-            <span>{{ target.content }}</span>
-            <input type="checkbox" v-model="target.finished" />
-          </li>
+          <Target
+            v-for="(target, i) in diary.targets"
+            :key="i"
+            :content="target.content"
+            :finished="target.finished"
+            @select="toggleTarget(i, $event)"
+          />
         </ul>
         <div class="remarks">{{ diary.remarks }}</div>
       </div>
@@ -51,12 +54,14 @@ import Timer from '../assets/lib/Timer'
 
 import Now from '@/components/Now'
 import UpdateDiary from '@/components/UpdateDiary'
+import Target from '@/components/Target'
 
 export default {
   name: 'Home',
   components: {
     Now,
     UpdateDiary,
+    Target,
   },
   data() {
     const date = Timer.dateOf()
@@ -90,6 +95,12 @@ export default {
   },
   computed: {
     ...mapState(['db']),
+    finishedCount() {
+      return this.diary.targets.reduce((s, c) => s + (c.finished ? 1 : 0), 0)
+    },
+    targetsCount() {
+      return this.diary.targets.length
+    },
   },
   watch: {
     diary(d) {
@@ -148,6 +159,20 @@ export default {
     addTomorrow() {
       this.toUpdate = this.tomorrow
     },
+    toggleTarget(index, status) {
+      const finishedBefore = this.finishedCount
+      this.diary.targets[index].finished = status
+      const goal = this.diary.goal
+      const rewards = Number(this.rewards)
+
+      if (status) {
+        const newRewards = rewards + (goal - rewards) / (this.targetsCount - finishedBefore)
+        this.rewards = Math.ceil(newRewards).toString()
+      } else {
+        const newRewards = rewards - rewards / finishedBefore
+        this.rewards = Math.ceil(newRewards).toString()
+      }
+    },
     updateFinished(updated) {
       if (updated) {
         this.updateDiary()
@@ -171,8 +196,9 @@ export default {
   flex 1 1 auto
   display flex
   flex-direction column
-  padding 12px
+  padding 12px 0
   .title
+    padding 0 12px
     margin-bottom 18px
     display flex
     justify-content space-between
@@ -197,19 +223,9 @@ export default {
     overflow-y scroll
   ul
     padding 0
-  li
-    padding 6px 0
-    border-top solid 1px #eee
-    display flex
-    justify-content space-between
-    align-items center
-    &:last-child
-      border-bottom solid 1px #eee
-    input
-      margin-left 6px
-      flex 0 0 16px
   .remarks
     margin-top 12px
+    padding 0 12px
 .orga-footer
   padding 12px
   color #fff
