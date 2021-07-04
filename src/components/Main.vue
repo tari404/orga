@@ -82,7 +82,7 @@ export default {
   },
   data() {
     const date = Timer.dateOf(this.date)
-    const tomorrow = Timer.dateOf(this.date + 86400000)
+    const tomorrow = Timer.dateOf(this.date || Date.now() + 86400000)
     const month = Timer.monthOf(this.date)
     return {
       diary: {
