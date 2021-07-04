@@ -39,13 +39,10 @@
     <div class="orga-footer">
       <div class="rewards">
         <div>
-          <p>今日报酬</p>
-          <div class="inputs">
-            <input class="range" type="range" min="-100" max="400" step="1" v-model="rewards" />
-            <input class="number" type="number" v-model="rewards" />
-          </div>
+          <p>今日零花钱</p>
+          <Reward :rewards.sync="rewards" @update:rewards="submitDiary" />
         </div>
-        <div class="submit-diary" @click="submitDiary">更新</div>
+        <!-- <div class="submit-diary" @click="submitDiary">更新</div> -->
       </div>
       <div>
         <div v-if="tomorrow.targets.length">明日目标已安排</div>
@@ -65,6 +62,7 @@ import UpdateDiary from '@/components/UpdateDiary'
 import Target from '@/components/Target'
 
 import SelectDate from '@/components/ui/SelectDate'
+import Reward from '@/components/ui/Reward'
 
 export default {
   name: 'Main',
@@ -73,6 +71,7 @@ export default {
     UpdateDiary,
     Target,
     SelectDate,
+    Reward,
   },
   props: {
     date: {
@@ -107,7 +106,7 @@ export default {
         spend: [],
       },
       toUpdate: null,
-      rewards: '0',
+      rewards: 0,
     }
   },
   computed: {
@@ -121,7 +120,7 @@ export default {
   },
   watch: {
     diary(d) {
-      this.rewards = d.rewards.toString()
+      this.rewards = d.rewards
     },
   },
   async created() {
@@ -160,12 +159,12 @@ export default {
     async submitDiary() {
       await this.db.set('monthly', {
         ...this.monthly,
-        grow: this.monthly.grow - this.diary.rewards + Number(this.rewards),
+        grow: this.monthly.grow - this.diary.rewards + this.rewards,
       })
       await this.db.set('diary', {
         ...this.diary,
         updated: true,
-        rewards: Number(this.rewards),
+        rewards: this.rewards,
       })
       this.updateDiary()
       this.updateMonthly()
@@ -180,15 +179,17 @@ export default {
       const finishedBefore = this.finishedCount
       this.diary.targets[index].finished = status
       const goal = this.diary.goal
-      const rewards = Number(this.rewards)
+      const rewards = this.rewards
 
       if (status) {
         const newRewards = rewards + (goal - rewards) / (this.targetsCount - finishedBefore)
-        this.rewards = Math.ceil(newRewards).toString()
+        this.rewards = Math.ceil(newRewards)
       } else {
         const newRewards = rewards - rewards / finishedBefore
-        this.rewards = Math.ceil(newRewards).toString()
+        this.rewards = Math.ceil(newRewards)
       }
+
+      this.submitDiary()
     },
     updateFinished(updated) {
       if (updated) {
@@ -263,24 +264,6 @@ export default {
     justify-content space-between
     align-items center
     position relative
-    .inputs
-      display flex
-      align-items center
-    .range
-      height 30px
-      margin-right 24px
-    .number
-      padding 0
-      width 100px
-      color #fff
-      font inherit
-      font-size 24px
-      line-height 30px
-      border none
-      outline none
-      display inline
-      border-radius 0
-      background none
   .submit-diary
     position absolute
     right 0
