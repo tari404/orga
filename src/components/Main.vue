@@ -42,14 +42,15 @@
           <p>今日零花钱</p>
           <Reward :rewards.sync="rewards" @update:rewards="submitDiary" />
         </div>
-        <!-- <div class="submit-diary" @click="submitDiary">更新</div> -->
       </div>
       <div>
         <div v-if="tomorrow.targets.length">明日目标已安排</div>
         <div v-else @click="addTomorrow">设定明日目标</div>
       </div>
+      <i class="shopping" @click="goShopping" />
     </div>
     <UpdateDiary v-if="toUpdate" :date="toUpdate.date" :diary="toUpdate" @close="updateFinished" />
+    <Shopping v-if="shopping" :monthly="shopping" @close="shoppingFinished" />
   </div>
 </template>
 
@@ -59,6 +60,7 @@ import Timer from '../assets/lib/Timer'
 
 import Now from '@/components/Now'
 import UpdateDiary from '@/components/UpdateDiary'
+import Shopping from '@/components/Shopping'
 import Target from '@/components/Target'
 
 import SelectDate from '@/components/ui/SelectDate'
@@ -69,6 +71,7 @@ export default {
   components: {
     Now,
     UpdateDiary,
+    Shopping,
     Target,
     SelectDate,
     Reward,
@@ -106,6 +109,7 @@ export default {
         spend: [],
       },
       toUpdate: null,
+      shopping: null,
       rewards: 0,
     }
   },
@@ -175,6 +179,9 @@ export default {
     addTomorrow() {
       this.toUpdate = this.tomorrow
     },
+    goShopping() {
+      this.shopping = this.monthly
+    },
     toggleTarget(index, status) {
       const finishedBefore = this.finishedCount
       this.diary.targets[index].finished = status
@@ -196,6 +203,12 @@ export default {
         this.updateDiary()
       }
       this.toUpdate = null
+    },
+    shoppingFinished(updated) {
+      if (updated) {
+        this.updateMonthly()
+      }
+      this.shopping = null
     },
     selectDate(date) {
       console.log(date)
@@ -255,15 +268,23 @@ export default {
     margin-top 12px
     padding 0 12px
 .orga-footer
-  padding 12px
+  padding 12px 50px 12px 12px
   color #fff
   background-color #558b2f
+  position relative
   .rewards
-    padding-right 50px
     display flex
     justify-content space-between
     align-items center
     position relative
+  .shopping
+    position absolute
+    right 12px
+    top 50%
+    transform translateY(-50%)
+    width 24px
+    height 24px
+    background-image url('~@/assets/icon/shopping.svg')
   .submit-diary
     position absolute
     right 0
