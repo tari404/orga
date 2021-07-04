@@ -5,6 +5,11 @@ export default {
     return now
   },
 
+  fromISODate(date) {
+    const d = new Date(date)
+    return d.getTime() + d.getTimezoneOffset() * 60000
+  },
+
   dateOf(ts) {
     const now = this.now(ts)
     return {

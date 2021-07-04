@@ -17,6 +17,9 @@ export default {
   box-sizing border-box
 body, ul, p
   margin 0
+a
+  color inherit
+  text-decoration none
 #app
   position fixed
   top 0
