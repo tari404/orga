@@ -47,6 +47,8 @@ export default {
     return {
       spend,
       totalValue,
+      grow: this.monthly.grow,
+
       content: '',
       value: '',
 
@@ -68,10 +70,11 @@ export default {
       this.focus = -1
       const removed = this.spend.splice(i, 1)[0]
       const value = removed.value
+      this.grow += value
       this.totalValue -= value
       await this.db.set('monthly', {
         ...this.monthly,
-        grow: this.monthly.grow + value,
+        grow: this.grow,
         spend: this.spend.map((item) => ({
           content: item.content,
           value: item.value,
@@ -84,9 +87,10 @@ export default {
       if (!value || value < 0 || !this.content) {
         return
       }
+      this.grow -= value
       await this.db.set('monthly', {
         ...this.monthly,
-        grow: this.monthly.grow - value,
+        grow: this.grow,
         spend: [
           ...this.spend.map((item) => ({
             content: item.content,
