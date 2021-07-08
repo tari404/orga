@@ -5,19 +5,24 @@
       <p>开销内容</p>
       <textarea rows="3" v-model="content"></textarea>
       <p>费用</p>
-      <input type="number" v-model="value" />
+      <input type="number" v-model="value" placeholder="0" />
       <p class="total-spend">本月已花费{{ spend.length }}笔，共支出{{ totalValue }}</p>
       <ul class="spend-list">
-        <li v-for="(item, i) in spend" :key="i">
+        <li v-for="(item, i) in spend" :key="item.key" @click="toggle(i)">
           <i />
-          <p>{{ item.content }}</p>
+          <div class="content">
+            <p>{{ item.content }}</p>
+          </div>
           <span>{{ item.value }}</span>
+          <div class="remove" :open="focus === i">
+            <div @click.stop="remove(i)">删除</div>
+          </div>
         </li>
       </ul>
     </div>
     <div class="buttons">
-      <button @click="$emit('close')">取消</button>
-      <button @click="submit">提交</button>
+      <div @click="$emit('close')">取消</div>
+      <div @click="submit">提交</div>
     </div>
   </div>
 </template>
@@ -34,19 +39,46 @@ export default {
     },
   },
   data() {
-    const spend = this.monthly.spend
+    const spend = this.monthly.spend.map((item) => ({
+      ...item,
+      key: Math.round(Math.random() * 1e10),
+    }))
     const totalValue = spend.reduce((s, r) => s + r.value, 0)
     return {
-      spend: this.monthly.spend,
+      spend,
       totalValue,
       content: '',
-      value: '0',
+      value: '',
+
+      focus: -1,
     }
   },
   computed: {
     ...mapState(['db']),
   },
   methods: {
+    toggle(i) {
+      if (this.focus === i) {
+        this.focus = -1
+      } else {
+        this.focus = i
+      }
+    },
+    async remove(i) {
+      this.focus = -1
+      const removed = this.spend.splice(i, 1)[0]
+      const value = removed.value
+      this.totalValue -= value
+      await this.db.set('monthly', {
+        ...this.monthly,
+        grow: this.monthly.grow + value,
+        spend: this.spend.map((item) => ({
+          content: item.content,
+          value: item.value,
+        })),
+      })
+      this.$emit('update')
+    },
     async submit() {
       const value = Number(this.value)
       if (!value || value < 0 || !this.content) {
@@ -56,10 +88,13 @@ export default {
         ...this.monthly,
         grow: this.monthly.grow - value,
         spend: [
-          ...this.spend,
+          ...this.spend.map((item) => ({
+            content: item.content,
+            value: item.value,
+          })),
           {
             content: this.content,
-            value: value,
+            value,
           },
         ],
       })
@@ -87,6 +122,9 @@ export default {
     width 100%
     max-height 80%
     overflow scroll
+  h2
+    margin 0 0 24px
+    font-size 20px
 
   .buttons
     position absolute
@@ -94,17 +132,21 @@ export default {
     left 0
     width 100%
     display flex
-    >button
-      border none
-      font inherit
-      height 40px
+    font-size 18px
+    >div
+      flex 1 1 auto
+      height 50px
+      display flex
+      justify-content center
+      align-items center
       color #666
       background-color #ddd
-      flex 1 1 auto
-    >button:last-child
+      cursor pointer
+    >div:last-child
       color #fff
       background-color #8bc34a
       flex 3 1 auto
+
 
 .total-spend
   margin 24px 0 8px
@@ -118,14 +160,17 @@ export default {
     border-top solid 1px #f4f5f4
     line-height 24px
     overflow hidden
+    position relative
     &:last-child
       border-bottom solid 1px #f4f5f4
     span
       margin-left 12px
       flex 0 0 80px
       text-align right
-    p
+    .content
       flex 1 1 auto
+      p
+        width 200px
     >i
       margin-right 12px
       flex 0 0 4px
@@ -133,6 +178,19 @@ export default {
       height 4px
       border-radius 50%
       background-color #ddd
+  .remove
+    flex 0 0 0
+    transition all .2s
+    will-change auto
+    overflow hidden
+    &[open]
+      flex 0 0 70px
+    >div
+      margin-left 40px
+      width 30px
+      color #f44336
+      font-size 14px
+      text-align right
 
 textarea
   padding 10px

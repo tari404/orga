@@ -16,8 +16,8 @@
       </div>
     </div>
     <div class="buttons">
-      <button @click="$emit('close')">取消</button>
-      <button @click="submit">提交</button>
+      <div @click="$emit('close')">取消</div>
+      <div @click="submit">提交</div>
     </div>
   </div>
 </template>
@@ -95,6 +95,9 @@ export default {
     width 100%
     max-height 80%
     overflow scroll
+  h2
+    margin 0 0 24px
+    font-size 20px
 
   .buttons
     position absolute
@@ -102,14 +105,17 @@ export default {
     left 0
     width 100%
     display flex
-    >button
-      border none
-      font inherit
-      height 40px
+    font-size 18px
+    >div
+      flex 1 1 auto
+      height 50px
+      display flex
+      justify-content center
+      align-items center
       color #666
       background-color #ddd
-      flex 1 1 auto
-    >button:last-child
+      cursor pointer
+    >div:last-child
       color #fff
       background-color #8bc34a
       flex 3 1 auto

@@ -50,7 +50,12 @@
       <i class="shopping" @click="goShopping" />
     </div>
     <UpdateDiary v-if="toUpdate" :date="toUpdate.date" :diary="toUpdate" @close="updateFinished" />
-    <Shopping v-if="shopping" :monthly="shopping" @close="shoppingFinished" />
+    <Shopping
+      v-if="shopping"
+      :monthly="shopping"
+      @close="shoppingFinished"
+      @update="updateMonthly"
+    />
   </div>
 </template>
 
