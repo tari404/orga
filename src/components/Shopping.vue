@@ -170,7 +170,7 @@ export default {
     .content
       flex 1 1 auto
       p
-        width 200px
+        width 180px
     >i
       margin-right 12px
       flex 0 0 4px
@@ -184,9 +184,9 @@ export default {
     will-change auto
     overflow hidden
     &[open]
-      flex 0 0 70px
+      flex 0 0 60px
     >div
-      margin-left 40px
+      margin-left 30px
       width 30px
       color #f44336
       font-size 14px
