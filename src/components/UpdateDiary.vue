@@ -24,6 +24,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import Timer from '../assets/lib/Timer'
 
 export default {
   name: 'UpdateDiary',
@@ -61,15 +62,26 @@ export default {
       this.targets.splice(i, 1)
     },
     async submit() {
+      const diary = this.diary
+      const now = Timer.dateOf().date
+      const isEmpty = diary.targets.length === 0 && !diary.remarks
+
       await this.db.set('diary', {
-        ...this.diary,
+        ...diary,
         targets: this.targets
           .filter((item) => !!item)
-          .map((item) => ({
-            content: item,
-            finished: false,
-          })),
+          .map((item) => {
+            const old = diary.targets.find((r) => r.content === item)
+            return {
+              content: item,
+              finished: !!old && old.finished,
+            }
+          }),
         remarks: this.remarks,
+        goal: 300, // TODO
+        delay: diary.delay || (isEmpty && diary.date <= now),
+        rewards: 0,
+        updated: false,
       })
       this.$emit('close', true)
     },

@@ -23,7 +23,7 @@
         <span v-if="diary.targets.length" @click="addDiary">编辑</span>
       </div>
       <div class="diary-container">
-        <div class="add-diary" v-if="!diary.targets.length" @click="addDiary">添加目标</div>
+        <div class="add-diary" v-if="isEmpty" @click="addDiary">添加目标</div>
         <ul v-else>
           <Target
             v-for="(target, i) in diary.targets"
@@ -34,16 +34,17 @@
           />
         </ul>
         <div class="remarks">{{ diary.remarks }}</div>
+        <div v-if="diary.delay" class="orga-overtime">过期弥补</div>
       </div>
     </div>
     <div class="orga-footer">
       <div class="rewards">
         <div>
           <p>今日零花钱</p>
-          <Reward :rewards.sync="rewards" @update:rewards="submitDiary" />
+          <Reward :diary="diary" :rewards.sync="rewards" @update:rewards="submitDiary" />
         </div>
       </div>
-      <div>
+      <div v-if="!date">
         <div v-if="tomorrow.targets.length">明日目标已安排</div>
         <div v-else @click="addTomorrow">设定明日目标</div>
       </div>
@@ -88,6 +89,7 @@ export default {
     },
   },
   data() {
+    // const today = Timer.dateOf().date
     const date = Timer.dateOf(this.date)
     const tomorrow = Timer.dateOf(this.date || Date.now() + 86400000)
     const month = Timer.monthOf(this.date)
@@ -96,17 +98,19 @@ export default {
         ...date,
         targets: [],
         remarks: '',
-        goal: 300, // TODO
         rewards: 0,
-        updated: false,
+        // goal: 300,
+        // updated: false,
+        // delay: true,
       },
       tomorrow: {
         ...tomorrow,
         targets: [],
         remarks: '',
-        goal: 300, // TODO
-        rewards: 0,
-        updated: false,
+        // goal: 300,
+        // rewards: 0,
+        // updated: false,
+        // delay: true,
       },
       monthly: {
         month,
@@ -126,6 +130,9 @@ export default {
     targetsCount() {
       return this.diary.targets.length
     },
+    isEmpty() {
+      return this.diary.targets.length === 0 && !this.diary.remarks
+    },
   },
   watch: {
     diary(d) {
@@ -143,16 +150,12 @@ export default {
       this.db.get('diary', this.diary.date).then((result) => {
         if (result) {
           this.diary = result
-        } else {
-          this.db.add('diary', this.diary)
         }
       })
 
       this.db.get('diary', this.tomorrow.date).then((result) => {
         if (result) {
           this.tomorrow = result
-        } else {
-          this.db.add('diary', this.tomorrow)
         }
       })
     },
@@ -190,7 +193,10 @@ export default {
     toggleTarget(index, status) {
       const finishedBefore = this.finishedCount
       this.diary.targets[index].finished = status
-      const goal = this.diary.goal
+      let goal = this.diary.goal
+      if (this.diary.delay) {
+        goal = goal / 2
+      }
       const rewards = this.rewards
 
       if (status) {
@@ -272,6 +278,18 @@ export default {
   .remarks
     margin-top 12px
     padding 0 12px
+
+.orga-overtime
+  margin 12px
+  padding 4px 0
+  border-radius 4px
+  border solid 2px #e91e74
+  background-color #fce4ec
+  text-align center
+  color #e91e74
+  font-weight 500
+  opacity .4
+
 .orga-footer
   padding 12px 50px 12px 12px
   color #fff

@@ -14,6 +14,7 @@ const _diary_template = {
   goal: 300,
   rewards: -10,
   updated: false,
+  delay: false,
 }
 
 // eslint-disable-next-line no-unused-vars
