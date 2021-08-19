@@ -17,7 +17,7 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      needToSetGoal: true,
+      needToSetGoal: false,
       inputGoal: '0',
     }
   },
