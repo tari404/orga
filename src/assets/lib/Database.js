@@ -110,12 +110,12 @@ export default class Database {
     })
   }
 
-  async set(store, date) {
+  async set(store, date, key) {
     return new Promise((resolve) => {
       if (!(this.db instanceof IDBDatabase)) {
         return resolve(false)
       }
-      const saveRequest = this.db.transaction(store, 'readwrite').objectStore(store).put(date)
+      const saveRequest = this.db.transaction(store, 'readwrite').objectStore(store).put(date, key)
       saveRequest.onsuccess = async () => {
         resolve(true)
       }

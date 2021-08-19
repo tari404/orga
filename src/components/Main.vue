@@ -4,11 +4,16 @@
       <Now />
       <div class="orga-console">
         <div>
-          <div>
+          <div class="item">
             本月已攒：<span>{{ monthly.grow }}</span>
           </div>
-          <div>
-            今日增加：<span>{{ diary.rewards }}</span>
+          <div class="item">
+            <p>
+              今日增加：<span>{{ diary.rewards }}</span>
+            </p>
+            <p v-if="!isEmpty">
+              目标：<span>{{ diary.goal }}</span>
+            </p>
           </div>
         </div>
         <template>
@@ -242,6 +247,10 @@ export default {
   display flex
   justify-content space-between
   align-items center
+  .item
+    display flex
+    p
+      width 140px
 
 .orga-aim
   flex 1 1 auto

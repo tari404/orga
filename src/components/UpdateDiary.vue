@@ -66,6 +66,8 @@ export default {
       const now = Timer.dateOf().date
       const isEmpty = diary.targets.length === 0 && !diary.remarks
 
+      const goal = await this.db.get('states', 'goal')
+
       await this.db.set('diary', {
         ...diary,
         targets: this.targets
@@ -78,7 +80,7 @@ export default {
             }
           }),
         remarks: this.remarks,
-        goal: 300, // TODO
+        goal,
         delay: diary.delay || (isEmpty && diary.date <= now),
         rewards: 0,
         updated: false,
