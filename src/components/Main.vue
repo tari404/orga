@@ -177,9 +177,9 @@ export default {
       const totalRewards = await this.db.getTotalRewards(this.date)
       const totalSpend = this.monthly.spend.reduce((s, c) => s + (c.value || 0), 0)
       if (totalRewards - totalSpend !== this.monthly.grow) {
+        this.monthly.grow = totalRewards - totalSpend
         return this.db.set('monthly', {
           ...this.monthly,
-          grow: totalRewards - totalSpend,
         })
       }
     },
