@@ -28,6 +28,11 @@ export default {
     return this.dateOf(new Date(now.getUTCFullYear(), now.getUTCMonth(), 1).getTime())
   },
 
+  lastDayOfMonth(ts) {
+    const now = this.now(ts)
+    return this.dateOf(new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 0).getTime())
+  },
+
   daysOfMonth(ts) {
     const now = this.now(ts)
     const year = now.getUTCFullYear()

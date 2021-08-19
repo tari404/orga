@@ -94,7 +94,6 @@ export default {
     },
   },
   data() {
-    // const today = Timer.dateOf().date
     const date = Timer.dateOf(this.date)
     const tomorrow = Timer.dateOf(this.date || Date.now() + 86400000)
     const month = Timer.monthOf(this.date)
@@ -168,10 +167,21 @@ export default {
       this.db.get('monthly', this.monthly.month).then((result) => {
         if (result) {
           this.monthly = result
+          this.checkMonthly()
         } else {
           this.db.add('monthly', this.monthly)
         }
       })
+    },
+    async checkMonthly() {
+      const totalRewards = await this.db.getTotalRewards(this.date)
+      const totalSpend = this.monthly.spend.reduce((s, c) => s + (c.value || 0), 0)
+      if (totalRewards - totalSpend !== this.monthly.grow) {
+        return this.db.set('monthly', {
+          ...this.monthly,
+          grow: totalRewards - totalSpend,
+        })
+      }
     },
     async submitDiary() {
       await this.db.set('monthly', {

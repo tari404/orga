@@ -82,7 +82,7 @@ export default {
         remarks: this.remarks,
         goal,
         delay: diary.delay || (isEmpty && diary.date <= now),
-        rewards: 0,
+        rewards: diary.rewards || 0,
         updated: false,
       })
       this.$emit('close', true)
