@@ -1,5 +1,9 @@
 <template>
-  <Main v-if="refresh" :date="ts" />
+  <Main v-if="refresh" :date="ts">
+    <template #menu>
+      <router-link to="/" class="back-to-home"></router-link>
+    </template>
+  </Main>
 </template>
 
 <script>
@@ -32,3 +36,11 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus" scoped>
+.back-to-home
+  display block
+  width 24px
+  height 24px
+  background-image url('~@/assets/icon/home.svg')
+</style>

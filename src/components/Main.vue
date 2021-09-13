@@ -1,25 +1,26 @@
 <template>
   <div class="home">
     <div class="orga-top">
-      <Now />
-      <div class="orga-console">
-        <div>
-          <div class="item">
-            本月已攒：<span>{{ monthly.grow }}</span>
-          </div>
-          <div class="item">
-            <p>
-              今日增加：<span>{{ diary.rewards }}</span>
-            </p>
-            <p v-if="!isEmpty">
-              目标：<span>{{ diary.goal }}</span>
-            </p>
+      <div>
+        <Now />
+        <div class="orga-console">
+          <div>
+            <div class="item">
+              本月已攒：<span>{{ monthly.grow }}</span>
+            </div>
+            <div class="item">
+              <p>
+                今日增加：<span>{{ diary.rewards }}</span>
+              </p>
+              <p v-if="!isEmpty">
+                目标：<span>{{ diary.goal }}</span>
+              </p>
+            </div>
           </div>
         </div>
-        <template>
-          <router-link to="/" v-if="date">返回当日</router-link>
-          <SelectDate v-else @update="selectDate" />
-        </template>
+      </div>
+      <div class="orga-menu">
+        <slot name="menu" />
       </div>
     </div>
     <div class="orga-aim">
@@ -74,7 +75,6 @@ import UpdateDiary from '@/components/UpdateDiary'
 import Shopping from '@/components/Shopping'
 import Target from '@/components/Target'
 
-import SelectDate from '@/components/ui/SelectDate'
 import Reward from '@/components/ui/Reward'
 
 export default {
@@ -84,7 +84,6 @@ export default {
     UpdateDiary,
     Shopping,
     Target,
-    SelectDate,
     Reward,
   },
   props: {
@@ -236,10 +235,6 @@ export default {
       }
       this.shopping = null
     },
-    selectDate(date) {
-      console.log(date)
-      this.$router.push('/' + date)
-    },
   },
 }
 </script>
@@ -253,14 +248,17 @@ export default {
   padding 12px
   color #fff
   background-color #558b2f
-.orga-console
   display flex
   justify-content space-between
   align-items center
+.orga-console
   .item
     display flex
     p
       width 140px
+.orga-menu
+  display grid
+  grid-gap 8px
 
 .orga-aim
   flex 1 1 auto

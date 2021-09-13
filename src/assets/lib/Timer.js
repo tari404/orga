@@ -18,6 +18,10 @@ export default {
     }
   },
 
+  dateToString(date) {
+    return new Date(date * 86400000).toISOString().substr(0, 10)
+  },
+
   monthOf(ts) {
     const now = this.now(ts)
     return (now.getUTCFullYear() - 1900) * 12 + now.getUTCMonth()

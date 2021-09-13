@@ -161,4 +161,39 @@ export default class Database {
       }
     })
   }
+
+  async getMonthlyInfo(ts = Date.now()) {
+    return new Promise((resolve) => {
+      if (!(this.db instanceof IDBDatabase)) {
+        return resolve(NaN)
+      }
+      const firstDay = Timer.firstDayOfMonth(ts).date
+      const lastDay = Timer.lastDayOfMonth(ts).date
+      const getRequest = this.db
+        .transaction('diary', 'readonly')
+        .objectStore('diary')
+        .getAll(IDBKeyRange.bound(firstDay, lastDay))
+      getRequest.onsuccess = (event) => {
+        const list = event.target.result.sort((a, b) => a.date - b.date)
+        let i = 0
+        const info = []
+        for (let d = firstDay; d <= lastDay; d++) {
+          if (list[i]?.date === d) {
+            info.push(list[i])
+            i++
+          } else {
+            info.push({
+              date: d,
+              dateStr: Timer.dateToString(d),
+              isEmpty: true,
+            })
+          }
+        }
+        resolve(info)
+      }
+      getRequest.onerror = () => {
+        resolve([])
+      }
+    })
+  }
 }

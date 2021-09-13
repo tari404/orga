@@ -36,7 +36,7 @@ export default {
 <style lang="stylus" scoped>
 .orga-select-date
   width 24px
-  height 40px
+  height 24px
   display flex
   justify-content center
   align-items center

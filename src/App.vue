@@ -46,6 +46,9 @@ export default {
   box-sizing border-box
 body, ul, p
   margin 0
+ul
+  padding 0
+  list-style none
 a
   color inherit
   text-decoration none
