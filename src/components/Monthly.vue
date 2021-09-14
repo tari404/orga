@@ -10,6 +10,7 @@
           <li v-for="(item, i) in week" :key="i">{{ item }}</li>
         </ul>
         <ul>
+          <span v-for="i in dayOfFirstDate" :key="i"></span>
           <li
             v-for="(item, i) in calendar"
             :key="item.date"
@@ -21,13 +22,21 @@
           >
             {{ i + 1 }}
             <i
+              :class="{
+                delay: item.delay,
+              }"
               :style="{
-                transform: `translateY(${item.isEmpty ? 0 : -(item.rewards / item.goal) * 100}%)`,
+                transform: `translateY(${dY(item)})`,
               }"
             />
           </li>
         </ul>
       </div>
+    </div>
+    <div class="month">
+      <span @click="jumpMonth(-1)">&lt;</span>
+      <p>{{ month }}</p>
+      <span @click="jumpMonth(1)">&gt;</span>
     </div>
     <div class="details"></div>
   </div>
@@ -44,17 +53,45 @@ export default {
   data() {
     return {
       week,
-
       today: Timer.dateOf().date,
+
+      timePointer: null,
+      month: '',
+      dayOfFirstDate: 0,
       calendar: [],
     }
   },
   computed: {
     ...mapState(['db']),
   },
-  async created() {
-    const info = await this.db.getMonthlyInfo()
-    this.calendar = info
+  created() {
+    this.update()
+  },
+  methods: {
+    dY(item) {
+      if (item.isEmpty) {
+        return '0'
+      }
+      let y = -(item.rewards / item.goal) * 100
+      if (y < -100) {
+        y = -100
+      }
+      return y.toString() + '%'
+    },
+    async update(ts) {
+      const firstDate = Timer.firstDateOfMonth(ts)
+      this.timePointer = firstDate
+      this.month = firstDate.dateStr.substr(0, 7).replace('-', '/')
+      const day = new Date(firstDate.dateStr).getDay()
+      this.dayOfFirstDate = day
+      const info = await this.db.getMonthlyInfo(ts)
+      this.calendar = info
+    },
+    jumpMonth(step) {
+      const d = new Date(this.timePointer.dateStr)
+      const nd = new Date(d.getFullYear(), d.getMonth() + step)
+      this.update(nd.getTime())
+    },
   },
 }
 </script>
@@ -66,7 +103,7 @@ export default {
   left 0
   right 0
   bottom 0
-  background-color rgba(#fff, .7)
+  background-color rgba(#ebf1e9, .7)
   backdrop-filter blur(4px)
   display flex
   flex-direction column
@@ -77,9 +114,17 @@ export default {
     align-items center
   .calendar-layout
     background-color #fff
+  .month
+    margin 8px 12px
+    display flex
+    justify-content space-between
+    align-items center
+    p
+      font-size 20px
+      font-weight 600
   .details
     flex 1 1 auto
-    background-color rgba(red, .1)
+    // background-color rgba(red, .1)
 
 .calendar
   margin 10px auto 20px
@@ -107,7 +152,8 @@ export default {
     align-items center
     width 100%
     height 38px
-    border-bottom solid 1px #c5e1a5
+    border-top solid 2px #fff
+    border-bottom solid 2px #c5e1a5
     font-weight 600
     font-size 12px
     color #000
@@ -122,6 +168,8 @@ export default {
       height 100%
       background-color #c5e1a5
       z-index -1
+    .delay
+      border-top solid 6px #e91e7440
   .feature
     color #ccc
   .today

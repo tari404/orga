@@ -150,7 +150,7 @@ export default class Database {
       const getRequest = this.db
         .transaction('diary', 'readonly')
         .objectStore('diary')
-        .getAll(IDBKeyRange.bound(Timer.firstDayOfMonth(ts).date, Timer.lastDayOfMonth(ts).date))
+        .getAll(IDBKeyRange.bound(Timer.firstDateOfMonth(ts).date, Timer.lastDateOfMonth(ts).date))
       getRequest.onsuccess = (event) => {
         const list = event.target.result
         const rewards = list.reduce((s, c) => s + (c.rewards || 0), 0)
@@ -167,8 +167,8 @@ export default class Database {
       if (!(this.db instanceof IDBDatabase)) {
         return resolve(NaN)
       }
-      const firstDay = Timer.firstDayOfMonth(ts).date
-      const lastDay = Timer.lastDayOfMonth(ts).date
+      const firstDay = Timer.firstDateOfMonth(ts).date
+      const lastDay = Timer.lastDateOfMonth(ts).date
       const getRequest = this.db
         .transaction('diary', 'readonly')
         .objectStore('diary')

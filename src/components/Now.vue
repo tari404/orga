@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     render() {
-      const now = Timer.now()
+      const now = Timer.dateWithoutTimezone()
       const date = now.toISOString()
 
       this.date = [date.substr(0, 10).replace(/-/g, '/'), date.substr(11, 12)]

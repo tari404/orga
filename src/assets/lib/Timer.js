@@ -1,20 +1,20 @@
 export default {
-  now(ts) {
-    let now = ts ? new Date(ts) : new Date()
-    now = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    return now
+  dateWithoutTimezone(ts) {
+    let d = ts ? new Date(ts) : new Date()
+    d = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+    return d
   },
 
-  fromISODate(date) {
-    const d = new Date(date)
-    return d.getTime() + d.getTimezoneOffset() * 60000
+  fromISODate(dateStr) {
+    const d = new Date(dateStr)
+    return d.getTime()
   },
 
   dateOf(ts) {
-    const now = this.now(ts)
+    const d = this.dateWithoutTimezone(ts)
     return {
-      date: Math.floor(now.getTime() / 86400000),
-      dateStr: now.toISOString().substr(0, 10),
+      date: Math.floor(d.getTime() / 86400000),
+      dateStr: d.toISOString().substr(0, 10),
     }
   },
 
@@ -23,26 +23,17 @@ export default {
   },
 
   monthOf(ts) {
-    const now = this.now(ts)
-    return (now.getUTCFullYear() - 1900) * 12 + now.getUTCMonth()
+    let d = ts ? new Date(ts) : new Date()
+    return (d.getFullYear() - 1900) * 12 + d.getMonth()
   },
 
-  firstDayOfMonth(ts) {
-    const now = this.now(ts)
-    return this.dateOf(new Date(now.getUTCFullYear(), now.getUTCMonth(), 1).getTime())
+  firstDateOfMonth(ts) {
+    let d = ts ? new Date(ts) : new Date()
+    return this.dateOf(new Date(d.getFullYear(), d.getMonth(), 1).getTime())
   },
 
-  lastDayOfMonth(ts) {
-    const now = this.now(ts)
-    return this.dateOf(new Date(now.getUTCFullYear(), now.getUTCMonth() + 1, 0).getTime())
-  },
-
-  daysOfMonth(ts) {
-    const now = this.now(ts)
-    const year = now.getUTCFullYear()
-    const month = now.getUTCMonth()
-    const first = new Date(year, month, 1).getTime()
-    const last = new Date(year, month + 1, 1).getTime()
-    return (last - first) / 86400000
+  lastDateOfMonth(ts) {
+    let d = ts ? new Date(ts) : new Date()
+    return this.dateOf(new Date(d.getFullYear(), d.getMonth() + 1, 0).getTime())
   },
 }

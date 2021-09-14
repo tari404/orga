@@ -1,5 +1,5 @@
 <template>
-  <Main v-if="refresh" :date="ts">
+  <Main v-if="refresh" :ts="ts">
     <template #menu>
       <router-link to="/" class="back-to-home"></router-link>
     </template>

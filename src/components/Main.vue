@@ -50,7 +50,7 @@
           <Reward :diary="diary" :rewards.sync="rewards" @update:rewards="submitDiary" />
         </div>
       </div>
-      <div v-if="!date">
+      <div v-if="!ts">
         <div v-if="tomorrow.targets.length">明日目标已安排</div>
         <div v-else @click="addTomorrow">设定明日目标</div>
       </div>
@@ -87,15 +87,15 @@ export default {
     Reward,
   },
   props: {
-    date: {
+    ts: {
       type: Number,
       default: undefined,
     },
   },
   data() {
-    const date = Timer.dateOf(this.date)
-    const tomorrow = Timer.dateOf(this.date || Date.now() + 86400000)
-    const month = Timer.monthOf(this.date)
+    const date = Timer.dateOf(this.ts)
+    const tomorrow = Timer.dateOf(this.ts || Date.now() + 86400000)
+    const month = Timer.monthOf(this.ts)
     return {
       diary: {
         ...date,
@@ -173,7 +173,7 @@ export default {
       })
     },
     async checkMonthly() {
-      const totalRewards = await this.db.getTotalRewards(this.date)
+      const totalRewards = await this.db.getTotalRewards(this.ts)
       const totalSpend = this.monthly.spend.reduce((s, c) => s + (c.value || 0), 0)
       if (totalRewards - totalSpend !== this.monthly.grow) {
         this.monthly.grow = totalRewards - totalSpend
